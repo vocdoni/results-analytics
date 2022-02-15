@@ -82,7 +82,6 @@ func decryptVoteEnvelope(process *indexertypes.Process, keys []api.Key, envelope
 
 func unmarshalVote(votePackage []byte, keys []string) (*indexertypes.VotePackage, error) {
 	var vote indexertypes.VotePackage
-	decryptedBz := make([]byte, len(votePackage))
 	// if encryption keys, decrypt the vote
 	if len(keys) > 0 {
 		for i := len(keys) - 1; i >= 0; i-- {
@@ -90,12 +89,12 @@ func unmarshalVote(votePackage []byte, keys []string) (*indexertypes.VotePackage
 			if err != nil {
 				return nil, err
 			}
-			if decryptedBz, err = priv.Decrypt(decryptedBz); err != nil {
-				return nil, err
+			if votePackage, err = priv.Decrypt(votePackage); err != nil {
+				return nil, fmt.Errorf("could not decrypt vote package: %v", err)
 			}
 		}
 	}
-	if err := json.Unmarshal(decryptedBz, &vote); err != nil {
+	if err := json.Unmarshal(votePackage, &vote); err != nil {
 		return nil, fmt.Errorf("cannot unmarshal vote: %w", err)
 	}
 	return &vote, nil
