@@ -1,7 +1,10 @@
 package config
 
 type Analytics struct {
-	GatewayUrl string
-	LogLevel   string
-	SigningKey string
+	GatewayUrl  *string
+	LogLevel    *string
+	SigningKey  *string
+	ProcessID   *string
+	VoteIndexes *[]int
+	BlankValue  *int
 }
