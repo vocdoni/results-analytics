@@ -1,4 +1,4 @@
-package blankvotes
+package countvotes
 
 import (
 	"encoding/json"
@@ -12,7 +12,7 @@ import (
 	"go.vocdoni.io/proto/build/go/models"
 )
 
-func CountBlankVotes(client *client.Client, processID string, indexes []int, blankValue int) (int, int) {
+func CountTargetVotes(client *client.Client, processID string, indexes []int, blankValue int) (int, int) {
 	log.Infof("counting votes for process %s", processID)
 	process, envelopes, err := getVotes(client, processID)
 	if err != nil {

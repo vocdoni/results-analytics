@@ -1,4 +1,4 @@
-package blankvotes
+package countvotes
 
 import (
 	"encoding/hex"

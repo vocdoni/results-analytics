@@ -3,9 +3,9 @@ package main
 import (
 	"fmt"
 
-	"results-analytics/blankvotes"
 	"results-analytics/client"
 	"results-analytics/config"
+	"results-analytics/countvotes"
 
 	flag "github.com/spf13/pflag"
 	"go.vocdoni.io/dvote/crypto/ethereum"
@@ -22,8 +22,8 @@ func newConfig() (*config.Analytics, error) {
 	cfg.GatewayUrl = flag.String("gatewayUrl",
 		"https://gw1.vocdoni.net", "url to use as gateway api endpoint")
 	cfg.ProcessID = flag.String("processID", "", "target process ID for analytics")
-	cfg.VoteIndexes = flag.IntSlice("voteIndexes", []int{0}, "array of indexes to check for blank values")
-	cfg.BlankValue = flag.Int("blankValue", 0, "value of a 'blank' vote")
+	cfg.QuestionIndexes = flag.IntSlice("questionIndexes", []int{0}, "array of indexes to check for target values")
+	cfg.TargetValue = flag.Int("targetValue", 0, "value of a target vote")
 	flag.CommandLine.SortFlags = false
 
 	// parse flags
@@ -61,8 +61,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Infof("calculating number of blank votes for process %s with blank value %d, indexes %v, gateway %s",
-		*cfg.ProcessID, *cfg.BlankValue, *cfg.VoteIndexes, *cfg.GatewayUrl)
-	totalVotes, blankVotes := blankvotes.CountBlankVotes(client, *cfg.ProcessID, *cfg.VoteIndexes, *cfg.BlankValue)
-	log.Infof("of %d total votes for process %s, counted %d blank votes", totalVotes, *cfg.ProcessID, blankVotes)
+	log.Infof("calculating number of votes for process %s with target value %d, indexes %v, gateway %s",
+		*cfg.ProcessID, *cfg.TargetValue, *cfg.QuestionIndexes, *cfg.GatewayUrl)
+	totalVotes, targetVotes := countvotes.CountTargetVotes(client, *cfg.ProcessID, *cfg.QuestionIndexes, *cfg.TargetValue)
+	log.Infof("of %d total votes for process %s, counted %d target votes", totalVotes, *cfg.ProcessID, targetVotes)
 }
