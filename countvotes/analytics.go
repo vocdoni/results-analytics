@@ -25,7 +25,10 @@ func CountTargetVotes(client *client.Client, processID string, indexes []int, bl
 		if err != nil {
 			log.Fatal(err)
 		}
-		for _, envelope := range envelopes {
+		for i, envelope := range envelopes {
+			if i%128 == 0 {
+				log.Infof("decrypting votes from index %d", i)
+			}
 			vote, err := decryptVoteEnvelope(process, privKeys, envelope)
 			if err != nil {
 				log.Fatal(err)
@@ -60,7 +63,7 @@ voteLoop:
 
 func decryptVoteEnvelope(process *indexertypes.Process, keys []api.Key, envelope *indexertypes.EnvelopePackage) (*indexertypes.VotePackage, error) {
 	// If package is encrypted
-	if process.Status != int32(models.ProcessStatus_RESULTS.Number()) {
+	if process.Status != int32(models.ProcessStatus_RESULTS.Number()) && process.Status != int32(models.ProcessStatus_ENDED.Number()) {
 		return nil, fmt.Errorf("cannot decrypt envelope: process status is %d", process.Status)
 	}
 	if len(keys) < len(envelope.EncryptionKeyIndexes) {

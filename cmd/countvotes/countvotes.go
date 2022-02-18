@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"results-analytics/client"
 	"results-analytics/config"
@@ -63,6 +64,7 @@ func main() {
 	}
 	log.Infof("calculating number of votes for process %s with target value %d, indexes %v, gateway %s",
 		*cfg.ProcessID, *cfg.TargetValue, *cfg.QuestionIndexes, *cfg.GatewayUrl)
+	now := time.Now()
 	totalVotes, targetVotes := countvotes.CountTargetVotes(client, *cfg.ProcessID, *cfg.QuestionIndexes, *cfg.TargetValue)
-	log.Infof("of %d total votes for process %s, counted %d target votes", totalVotes, *cfg.ProcessID, targetVotes)
+	log.Infof("of %d total votes for process %s, counted %d target votes\n TOOK %d seconds", totalVotes, *cfg.ProcessID, targetVotes, time.Now().Unix()-now.Unix())
 }

@@ -90,7 +90,7 @@ func (c *Client) GetEnvelopeList(pid []byte, from int) ([]*indexertypes.Envelope
 	if err != nil {
 		return nil, err
 	}
-	if !resp.Ok || resp.Envelopes == nil {
+	if !resp.Ok {
 		return nil, fmt.Errorf("cannot getEnvelopeList: %v", resp.Message)
 	}
 	return resp.Envelopes, nil
