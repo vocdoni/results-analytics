@@ -58,6 +58,9 @@ voteLoop:
 		}
 		numBlankVotes++
 	}
+	if len(votes) != len(envelopes) {
+		log.Fatalf("process has %d votes, only decoded %d of them", len(envelopes), len(votes))
+	}
 	return len(votes), numBlankVotes
 }
 

@@ -45,16 +45,23 @@ func getVotes(client *client.Client, processID string) (*indexertypes.Process, [
 
 	// Get the contents of each envelope
 	var envelopes []*indexertypes.EnvelopePackage
-	envelopeCh := make(chan *indexertypes.EnvelopePackage, 100000)
+	envelopeCh := make(chan *indexertypes.EnvelopePackage, 1000)
 	wg := new(sync.WaitGroup)
 	getEnvelope := func(nullifier types.HexBytes) {
 		newEnvelope, err := client.GetEnvelope(nullifier)
 		if err != nil {
-			log.Error(err)
+			log.Fatal(err)
 		}
 		envelopeCh <- newEnvelope
-		wg.Done()
 	}
+
+	go func() {
+		for {
+			newEnvelope := <-envelopeCh
+			envelopes = append(envelopes, newEnvelope)
+			wg.Done()
+		}
+	}()
 
 	envelopeIndex := 0
 	for envelopeIndex < len(envelopeList) {
@@ -66,14 +73,10 @@ func getVotes(client *client.Client, processID string) (*indexertypes.Process, [
 			envelopeIndex++
 		}
 
-		go func() {
-			for {
-				newEnvelope := <-envelopeCh
-				envelopes = append(envelopes, newEnvelope)
-			}
-		}()
-
 		wg.Wait()
+	}
+	if len(envelopeList) != len(envelopes) {
+		log.Fatalf("process has %d votes, only fetched %d of them", len(envelopeList), len(envelopes))
 	}
 
 	return process, envelopes, nil
