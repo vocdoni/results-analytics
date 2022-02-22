@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"results-analytics/client"
+	"strconv"
 
 	"go.vocdoni.io/dvote/api"
 	"go.vocdoni.io/dvote/crypto/nacl"
@@ -46,17 +47,21 @@ func CountTargetVotes(client *client.Client, processID string, indexes []int, bl
 	}
 	numBlankVotes := 0
 voteLoop:
-	for _, vote := range votes {
+	for i, vote := range votes {
 		for _, idx := range indexes {
 			if len(vote.Votes) <= idx {
-				log.Errorf("vote has only %d options, expected at least %d", len(vote.Votes), idx)
+				log.Fatalf("vote has only %d options, expected at least %d", len(vote.Votes), idx)
 				continue voteLoop
 			} else if vote.Votes[idx] != blankValue {
 				// If any of the votes with the given indexes are not blank, go to the next vote loop
 				continue voteLoop
 			}
 		}
-		numBlankVotes++
+		weight, err := strconv.Atoi(envelopes[i].Weight)
+		if err != nil {
+			log.Error(err)
+		}
+		numBlankVotes = numBlankVotes + weight
 	}
 	if len(votes) != len(envelopes) {
 		log.Fatalf("process has %d votes, only decoded %d of them", len(envelopes), len(votes))

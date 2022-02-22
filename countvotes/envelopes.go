@@ -65,11 +65,11 @@ func getVotes(client *client.Client, processID string) (*indexertypes.Process, [
 
 	envelopeIndex := 0
 	for envelopeIndex < len(envelopeList) {
-		// Only make maxConcurrentRequests requests, wait for them to finish before starting next batch
 		log.Infof("fetching individual vote envelopes from %d", envelopeIndex)
-		for i := 0; i < maxConcurrentRequests && envelopeIndex+i < len(envelopeList); i++ {
+		// Only make maxConcurrentRequests requests, wait for them to finish before starting next batch
+		for i := 0; i < maxConcurrentRequests && envelopeIndex < len(envelopeList); i++ {
 			wg.Add(1)
-			go getEnvelope(envelopeList[envelopeIndex+i].Nullifier)
+			go getEnvelope(envelopeList[envelopeIndex].Nullifier)
 			envelopeIndex++
 		}
 
