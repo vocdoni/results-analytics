@@ -66,5 +66,5 @@ func main() {
 		*cfg.ProcessID, *cfg.TargetValue, *cfg.QuestionIndexes, *cfg.GatewayUrl)
 	now := time.Now()
 	totalVotes, targetVotes := countvotes.CountTargetVotes(client, *cfg.ProcessID, *cfg.QuestionIndexes, *cfg.TargetValue)
-	log.Infof("of %d total votes for process %s, counted %d target votes\n TOOK %d seconds", totalVotes, *cfg.ProcessID, targetVotes, time.Now().Unix()-now.Unix())
+	fmt.Printf("\nRESULTS: of %d total votes for process %s, counted %d target votes\n took %d seconds\n", totalVotes, *cfg.ProcessID, targetVotes, time.Now().Unix()-now.Unix())
 }
